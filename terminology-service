@@ -1,0 +1,65 @@
+1.            sudo -i
+2.            apt-get update
+3.            apt-get install openssh-server
+4.            ufw allow 22
+ 
+4.            cd /home/dts
+5.            wget http://sourceforge.net/projects/apelon-dts/files/dts-linux/3.5.2/apelon-dts-3.5.2.203-linux-mysql.tar.gz/download
+ 
+ 
+ 
+6.            cd /opt/
+7.            sudo mkdir apelon-dts-3.5-linux
+8.            cd apelon-dts-3.5-linux
+9.            mv /home/dts/pelon-dts-3.5.2.203-linux-mysql.tar.gz .
+10.          sudo tar -zxf apelon-dts-3.5.2.203-linux-mysql.tar.gz
+11.          cd bin
+12.          sudo sh makeScriptsExecutable.sh
+13.          sudo apt-get install mysql-server
+14.          mysql -u root -p
+15.          Enter root Password:
+16.          create user 'dts'@'localhost' identified by 'dts';
+17.          grant all privileges on *.* to 'dts'@'localhost' with grant option;
+18.          exit
+19.          sudo vi /etc/mysql/my.cnf
+ 
+Edit the MySQL config file /etc/mysql/my.conf and add the following lines under the section titled [mysqld]
+lower_case_table_names=1
+default-storage-engine=InnoDB
+max_allowed_packet=100M
+character-set-server=utf8
+collation-server=utf8_general_ci
+ 
+20.          sudo /etc/init.d/mysql stop
+21.          sudo /etc/init.d/mysql start
+22.          mysql -u root -p
+23.          Enter root Password:
+24.          create database dts;
+ 
+The next step is to create the DTS schema using the schema creation tool:
+ 
+    in apelon-dts-3.5-linux/bin/kb, edit the files named source-connection.xml and target-connection.xml, and ensure that the connection properties are setup for mysql
+  <!--
+ 
+    MySQL connection.
+  -->
+  <connection>
+    <property name="direction" value="source"/>
+    <property name="type" value="mysql"/>
+    <property name="user" value="dts"/>
+    <property name="pass" value="dts"/>
+    <property name="host" value="localhost"/>
+    <property name="databaseName" value="dts"/>
+    <property name="databasePort" value="3306"/>
+    <property name="jdbcDriver" value="com.mysql.jdbc.Driver"/>
+    <property name="url_template" value="jdbc:mysql://[HOST]:[PORT]/[DATABASE]"/>
+    <property name="blockSize" value="256"/>
+  </connection>
+ 
+ 
+25. sudo apt-get update
+26. sudo apt-get install openjdk-7-jre
+ 
+    run the utility located in the folder apelon-dts-3.5-linux/bin/kb/create
+27.          ./kbcreate.sh
+28.          ./dts.sh start
