@@ -1,0 +1,51 @@
+Requirements
+ 
+Java 6 - openjdk
+Postgres 9.1
+app server -- JBOSS 4.2.3
+OpenEMPI 2.2.6
+ 
+_______________________________________
+ 
+ 
+ 
+sudo apt-get install openjdk-6-jdk
+sudo apt-get install postgresql-9.1 postgresql-client-common
+sudo -u postgres psql postgres
+\password postgres
+openempi
+openempi
+CREATE ROLE openempi LOGIN PASSWORD 'openempi' SUPERUSER VALID UNTIL 'infinity';
+CREATE DATABASE openempi WITH ENCODING='UTF8' OWNER=openempi CONNECTION LIMIT=-1;
+ 
+sudo vi /etc/postresql/9.1/main/postgresql.conf
+**** CHANGE listen_addresses = 'localhost' to listen_addresses = '*'
+ 
+ 
+cd /
+sudo mkdir sysnet
+cd sysnet
+sudo mkdir servers
+sudo wget https://kenai.com/projects/openempi/downloads/download/openempi-2.2.6-openempi.tar.gz
+sudo tar xvfz /tmp/openempi-2.2.6-openempi.tar.gz
+cd servers
+sudo mv /home/openempi/jboss-4.2.3.GA.zip .
+sudo apt-get install unzip
+sudo unzip jboss-4.2.3.GA.zip
+sudo mv /sysnet/servers/jboss-4.2.3.GA/server/default/lib/hibernate-annotations.jar /sysnet/servers/jboss-4.2.3.GA
+sudo vi /sysnet/servers/jboss-4.2.3.GA/bin/run.conf
+ 
+   ...
+#JAVA=""
+OPENEMPI_HOME=/sysnet/openempi-2.2.6 # ADD THIS LINE
+# Specify options to pass to the Java VM.
+#
+if [ "x$JAVA_OPTS" = "x" ]; then
+   JAVA_OPTS="-Xms128m -Xmx512m -Dopenempi.home=$OPENEMPI_HOME -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
+fi
+   ...
+ 
+ 
+ 
+cd /sysnet/servers/jboss-4.2.3.GA/bin
+sudo ./run.sh -b 0.0.0.0
