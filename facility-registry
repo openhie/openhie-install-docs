@@ -1,0 +1,14 @@
+# Facility Registry install
+# Source: https://bitbucket.org/instedd/resource_map/wiki/Install%20&%20Update
+
+Set up fully qualified domain name in /etc/hosts
+  vim /etc/hosts
+    127.0.0.1   fr.example.com  fr
+    
+Run the setup script  
+  curl http://apt.instedd.org/setup.sh | bash
+  
+Install resource map
+  sudo apt-get install resourcemap
+  
+Point your browser to your domain name / IP to access resource map
