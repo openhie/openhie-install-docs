@@ -1,4 +1,5 @@
 Install DTS
+============
 Follow the steps in the boxes to install DTS.
 Download the package lists from the repositories and update them to get information on the newest versions of packages and their dependencies.
 	`sudo apt-get update`
