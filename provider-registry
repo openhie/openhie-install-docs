@@ -1,0 +1,179 @@
+Install Provider Registry
+
+Follow the steps in bold and italics to install DTS.
+
+Download the package lists from the repositories and update them 
+
+to get information on the newest versions of packages and their 
+
+dependencies.
+
+sudo apt-get update
+
+Install ssh server to enable remote login.
+
+sudo apt-get install openssh-server
+
+Open port 22 in case it is blocked by the Ubuntu firewall
+
+sudo ufw allow 22
+
+Install Bazaar and LDAP
+
+sudo apt-get install bzr slapd ldap-utils phpldapadmin
+
+cd ~/
+
+Load Base Organizational Units ü 1
+
+Installing Provider Registry
+
+• • •
+
+Note: when prompted for ldap administrative password, enter ihris
+
+Get RHEA-PR branch
+
+bzr branch lp:rhea-pr
+
+Configure Custom Schema
+
+Stop LDAP service
+
+sudo /etc/init.d/slapd stop
+
+Link to bzr
+
+sudo cp ~/rhea-pr/ldap/provider.schema /etc/ldap/schema
+
+sudo chmod 644 /etc/ldap/schema/provider.schema
+
+sudo chown root:root /etc/ldap/schema/provider.schema
+
+sudo cp ~/rhea-pr/ldap/slapd.conf /etc/ldap/slapd.conf 
+
+sudo chmod 644 /etc/ldap/slapd.conf
+
+sudo chown openldap:openldap /etc/ldap/slapd.conf
+
+sudo mv /etc/ldap/slapd.d /etc/ldap/slapd.d.backup_`date +"%d_%m_%y"`
+
+sudo mkdir -p /etc/ldap/slapd.d 
+
+sudo chown -R openldap:openldap /etc/ldap/slapd.d
+
+sudo chmod 755 /etc/ldap/slapd.d
+
+sudo slaptest -f /etc/ldap/slapd.conf -F /etc/ldap/slapd.d
+
+sudo chown -R openldap:openldap /etc/ldap/slapd.d
+
+sudo /etc/init.d/slapd start
+
+Load Base Organizational Units
+
+sudo /etc/init.d/slapd stop
+
+sudo -su openldap slapadd -l ~/rhea-pr/ldap/base_organizational_units.ldif
+
+sudo /etc/init.d/slapd start
+
+Load Base Organizational Units ü 2
+
+Installing Provider Registry
+
+• • •
+
+Load User Data
+
+sudo /etc/init.d/slapd stop
+
+sudo -su openldap slapadd -l ~/rhea-pr/ldap/admin_pass.ldif
+
+sudo /etc/init.d/slapd start
+
+Load Sample iHRIS Data
+
+sudo /etc/init.d/slapd stop
+
+sudo -su openldap slapadd -l ~/rhea-pr/ldap/ihris_sample_export.ldif
+
+sudo /etc/init.d/slapd start
+
+OpenLDAP Web Services
+
+ln -s ~/rhea-pr/webservices /var/www
+
+Note: Set the passwords in the files:
+
+~/rhea-pr/webservices/test.php
+
+~/rhea-pr/webservices/lookupbyid/epidtest.php
+
+Webservices will be available on http://localhost/webservices. These include:
+
+Self Documenting API
+
+lookupbyid/epid
+
+lookupbyid/nid Note that this one may not return a result as the EPID may not be in your sample data
+
+Getting Sample NIDs
+
+For a list of valid NIDs to search on type:
+
+grep ^nid ~/rhea-pr/ldap/ihris_sample_export.ldif | awk -F": " '{print $2}'
+
+This will return a list of randomly generated NIDs starting with:
+
+3525410 
+
+3679883 
+
+5871571 
+
+5217592 
+
+Load Base Organizational Units ü 3
+
+Installing Provider Registry
+
+• • •
+
+8103869 
+
+3270751 
+
+3926031 
+
+6243516 
+
+5579562 
+
+4967987 
+
+5239089 
+
+7995164 
+
+7098176 
+
+4209805 
+
+5218322 
+
+4885570 
+
+3231963 
+
+7931566 
+
+5924499 
+
+2215160
+
+OpenLDAP Web User Interface
+
+The administrative web interface may be accessed at 
+
+http://localhost/phpldapadmin
